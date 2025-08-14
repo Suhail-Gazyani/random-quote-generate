@@ -3,163 +3,253 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Random Joke Generator</title>
+  <title>Random Quote Generator</title>
   <style>
-    :root{--bg:#0f172a;--panel:#111827;--card:#0b1220;--text:#e5e7eb;--muted:#94a3b8;--accent:#22d3ee;--btn:#06b6d4;--ok:#10b981;--warn:#f59e0b}
+    :root{--bg:#0f172a;--text:#e5e7eb;--muted:#94a3b8;--card:#0b1220;--accent:#22d3ee;--btn:#06b6d4;--ring:rgba(255,255,255,.08)}
     *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial}
-    body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%, rgba(34,211,238,.08), transparent), linear-gradient(180deg,#0b1021,#0b1021 60%, #060a14 100%);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}
-    .wrap{width:100%;max-width:860px}
-    header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}
-    h1{font-size:22px;margin:0;letter-spacing:0.2px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)); border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(2,6,23,.45)}
-    .controls{display:flex;flex-wrap:wrap;gap:8px}
-    select, button, input[type="checkbox"]{accent-color:var(--btn)}
-    select{background:transparent;border:1px solid rgba(255,255,255,.08);color:inherit;padding:8px 10px;border-radius:10px}
-    label.small{font-size:12px;color:var(--muted)}
+    body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(1100px 500px at 80% -10%, rgba(34,211,238,.08), transparent), linear-gradient(180deg,#0b1021,#0b1021 60%, #060a14 100%);display:flex;align-items:center;justify-content:center;padding:28px}
+    .wrap{width:100%;max-width:900px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    h1{margin:0;font-size:22px;letter-spacing:.2px}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    select,input,button{accent-color:var(--btn)}
+    select,input{background:transparent;border:1px solid var(--ring);color:inherit;padding:9px 10px;border-radius:10px}
+    input{min-width:220px}
     button{background:var(--btn);color:#042023;border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted)}
+    button.ghost{background:transparent;border:1px solid var(--ring);color:var(--muted)}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .joke{font-size:22px;line-height:1.5;background:rgba(255,255,255,0.03);padding:16px;border-radius:10px;min-height:88px}
-    .meta{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px;margin-top:8px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)); border:1px solid var(--ring);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(2,6,23,.45)}
+    .quote{font-size:24px;line-height:1.6;min-height:96px}
+    .author{margin-top:8px;color:var(--muted)}
+    .meta{margin-top:8px;color:var(--muted);font-size:12px}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    aside{height:100%;}
+    .list{max-height:320px;overflow:auto;margin-top:8px}
+    .fav{display:flex;justify-content:space-between;gap:10px;border:1px dashed var(--ring);padding:8px;border-radius:10px;margin-bottom:8px}
+    .fav small{color:var(--muted)}
+    .muted{color:var(--muted)}
     .hidden{display:none}
-    footer{margin-top:12px;color:var(--muted);font-size:12px}
     .spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,0.15);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>😂 Random Joke Generator</h1>
-      <div class="controls">
-        <div class="row">
-          <label class="small">Category
-            <select id="cat">
-              <option value="Any">Any</option>
-              <option value="Programming">Programming</option>
-              <option value="Misc">Misc</option>
-              <option value="Pun">Pun</option>
-              <option value="Spooky">Spooky</option>
-              <option value="Christmas">Christmas</option>
-            </select>
-          </label>
-          <label class="small"><input id="safe" type="checkbox" checked> Safe-mode</label>
-          <button id="newBtn">New Joke</button>
-          <button id="ttsBtn" class="ghost" title="Speak">🔊 Speak</button>
-          <button id="copyBtn" class="ghost" title="Copy">📋 Copy</button>
-          <button id="tweetBtn" class="ghost" title="Tweet">🐦 Tweet</button>
-        </div>
+      <h1>✨ Random Quote Generator</h1>
+      <div class="row">
+        <label class="muted">Tag
+          <select id="tag">
+            <option value="">Any</option>
+            <option>inspirational</option>
+            <option>life</option>
+            <option>love</option>
+            <option>wisdom</option>
+            <option>happiness</option>
+            <option>success</option>
+            <option>friendship</option>
+            <option>technology</option>
+            <option>famous-quotes</option>
+          </select>
+        </label>
+        <input id="search" placeholder="Keyword (optional)" />
+        <button id="newBtn">New Quote</button>
+        <button id="ttsBtn" class="ghost" title="Speak">🔊 Speak</button>
+        <button id="copyBtn" class="ghost" title="Copy">📋 Copy</button>
+        <button id="tweetBtn" class="ghost" title="Tweet">🐦 Tweet</button>
+        <button id="saveBtn" class="ghost" title="Save to favorites">⭐ Save</button>
       </div>
     </header>
 
-    <div class="card">
-      <div class="joke" id="joke">Press "New Joke" to start!</div>
-      <div class="meta" id="meta"><span id="source">Source: —</span> <span>•</span> <span id="category">Category: —</span> <span class="hidden" id="loading"><span class="spinner"></span> Loading…</span></div>
+    <div class="grid">
+      <main class="card">
+        <div class="quote" id="quote">Click "New Quote" to begin!</div>
+        <div class="author" id="author">—</div>
+        <div class="meta" id="meta">
+          <span id="tags">Tags: —</span>
+          <span> • </span>
+          <span id="source">Source: —</span>
+          <span id="loading" class="hidden" style="margin-left:8px"><span class="spinner"></span> Loading…</span>
+        </div>
+        <div class="actions">
+          <button id="copyAsImg" class="ghost" title="Copy as image">🖼️ Copy as image</button>
+          <button id="downloadPng" class="ghost" title="Download image">⬇️ Download</button>
+        </div>
+        <canvas id="canvas" class="hidden"></canvas>
+      </main>
+
+      <aside>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <div class="muted">⭐ Favorites</div>
+            <button id="clearFav" class="ghost" title="Clear favorites">🗑️ Clear</button>
+          </div>
+          <div class="list" id="favList"></div>
+        </div>
+      </aside>
     </div>
 
-    <footer>
-      Uses <code>JokeAPI</code> and <code>icanhazdadjoke</code> with offline fallback.
-    </footer>
+    <footer class="muted" style="margin-top:10px">Uses <code>Quotable</code> API with offline fallback. All client-side.</footer>
   </div>
 
 <script>
 (function(){
-  const jokeEl = document.getElementById('joke');
+  const quoteEl = document.getElementById('quote');
+  const authorEl = document.getElementById('author');
+  const tagsEl = document.getElementById('tags');
   const sourceEl = document.getElementById('source');
-  const catEl = document.getElementById('category');
   const loadingEl = document.getElementById('loading');
-  const btn = document.getElementById('newBtn');
+  const tag = document.getElementById('tag');
+  const search = document.getElementById('search');
+  const newBtn = document.getElementById('newBtn');
   const ttsBtn = document.getElementById('ttsBtn');
   const copyBtn = document.getElementById('copyBtn');
   const tweetBtn = document.getElementById('tweetBtn');
-  const cat = document.getElementById('cat');
-  const safe = document.getElementById('safe');
+  const saveBtn = document.getElementById('saveBtn');
+  const copyAsImgBtn = document.getElementById('copyAsImg');
+  const downloadPngBtn = document.getElementById('downloadPng');
+  const favList = document.getElementById('favList');
+  const clearFav = document.getElementById('clearFav');
+  const canvas = document.getElementById('canvas');
 
-  const offlineJokes = [
-    "Why do programmers prefer dark mode? Because light attracts bugs.",
-    "I told my computer I needed a break, and it said: 'No problem — I'll go to sleep.'",
-    "There are 10 types of people in the world: those who understand binary and those who don't.",
-    "Debugging: Being the detective in a crime movie where you are also the murderer.",
-    "My Wi‑Fi and I have a special connection — it drops me when I need it most."
+  const offlineQuotes = [
+    {content:"The only way to do great work is to love what you do.", author:"Steve Jobs", tags:["inspirational","work"]},
+    {content:"Life is 10% what happens to us and 90% how we react to it.", author:"Charles R. Swindoll", tags:["life","attitude"]},
+    {content:"Your time is limited, don't waste it living someone else's life.", author:"Steve Jobs", tags:["life","inspirational"]},
+    {content:"Happiness is not something ready made. It comes from your own actions.", author:"Dalai Lama", tags:["happiness","wisdom"]},
+    {content:"If you want to go fast, go alone. If you want to go far, go together.", author:"African Proverb", tags:["friendship","wisdom"]},
+    {content:"The secret of getting ahead is getting started.", author:"Mark Twain", tags:["success","inspirational"]},
+    {content:"Talk is cheap. Show me the code.", author:"Linus Torvalds", tags:["technology","programming"]}
   ];
 
-  function showLoading(yes){ loadingEl.classList.toggle('hidden', !yes); btn.disabled = !!yes; }
+  function showLoading(yes){ loadingEl.classList.toggle('hidden', !yes); newBtn.disabled = !!yes; }
 
-  function setJoke(text, meta={}){
-    jokeEl.textContent = text;
-    sourceEl.textContent = `Source: ${meta.source||'—'}`;
-    catEl.textContent = `Category: ${meta.category||'—'}`;
+  function setQuote(q, meta){
+    quoteEl.textContent = '“' + q.content + '”';
+    authorEl.textContent = q.author ? '— ' + q.author : '— Unknown';
+    tagsEl.textContent = 'Tags: ' + ((q.tags && q.tags.length)? q.tags.join(', ') : '—');
+    sourceEl.textContent = 'Source: ' + (meta?.source || '—');
+    saveBtn.textContent = '⭐ Save';
   }
 
-  async function fetchFromJokeAPI(){
-    const blacklist = safe.checked ? 'nsfw,religious,political,sexist,explicit' : '';
-    const base = 'https://v2.jokeapi.dev/joke/';
-    const url = `${base}${encodeURIComponent(cat.value)}?type=twopart, single${blacklist?`&blacklistFlags=${blacklist}`:''}`;
+  async function fetchFromQuotable(){
+    // API: https://api.quotable.io/random?tags=wisdom&minLength=80&maxLength=140
+    const params = new URLSearchParams();
+    if(tag.value) params.set('tags', tag.value);
+    if(search.value.trim()) params.set('query', search.value.trim());
+    const url = 'https://api.quotable.io/random' + (params.toString()? ('?' + params.toString()):'');
     const res = await fetch(url);
-    if(!res.ok) throw new Error('JokeAPI failed');
-    const data = await res.json();
-    if(data.type === 'single'){
-      return { text: data.joke, category: data.category, source: 'JokeAPI' };
-    } else {
-      return { text: `${data.setup} ${data.delivery}`, category: data.category, source: 'JokeAPI' };
-    }
+    if(!res.ok) throw new Error('Quotable failed');
+    const d = await res.json();
+    return {content:d.content, author:d.author, tags:d.tags||[]};
   }
 
-  async function fetchFromDadJoke(){
-    const res = await fetch('https://icanhazdadjoke.com/', { headers: { 'Accept': 'application/json' } });
-    if(!res.ok) throw new Error('icanhazdadjoke failed');
-    const data = await res.json();
-    return { text: data.joke, category: 'Dad Joke', source: 'icanhazdadjoke' };
-  }
-
-  async function getJoke(){
+  async function getQuote(){
     showLoading(true);
     try{
-      // Try primary source
-      const j1 = await fetchFromJokeAPI();
-      setJoke(j1.text, j1);
-    }catch(e1){
-      try{
-        const j2 = await fetchFromDadJoke();
-        setJoke(j2.text, j2);
-      }catch(e2){
-        const text = offlineJokes[Math.floor(Math.random()*offlineJokes.length)];
-        setJoke(text, {source:'Offline list', category:'Misc'});
-      }
-    } finally {
-      showLoading(false);
-    }
+      const q = await fetchFromQuotable();
+      setQuote(q, {source:'Quotable'});
+    }catch(e){
+      const q = offlineQuotes[Math.floor(Math.random()*offlineQuotes.length)];
+      setQuote(q, {source:'Offline list'});
+    }finally{ showLoading(false); }
   }
 
   function speak(){
-    const s = window.speechSynthesis; if(!s) return alert('Speech not supported on this browser.');
+    const s = window.speechSynthesis; if(!s) return alert('Speech not supported.');
     s.cancel();
-    const ut = new SpeechSynthesisUtterance(jokeEl.textContent);
-    ut.rate = 1; ut.pitch = 1; ut.lang = navigator.language || 'en-US';
+    const ut = new SpeechSynthesisUtterance(quoteEl.textContent + ' ' + authorEl.textContent);
+    ut.rate=1; ut.pitch=1; ut.lang = navigator.language || 'en-US';
     s.speak(ut);
   }
 
   function copy(){
-    navigator.clipboard.writeText(jokeEl.textContent).then(()=>{
-      copyBtn.textContent = '✅ Copied'; setTimeout(()=>copyBtn.textContent='📋 Copy', 1200);
+    navigator.clipboard.writeText(`${quoteEl.textContent} ${authorEl.textContent}`).then(()=>{
+      copyBtn.textContent='✅ Copied'; setTimeout(()=>copyBtn.textContent='📋 Copy',1200);
     }).catch(()=> alert('Copy failed'));
   }
 
   function tweet(){
-    const text = encodeURIComponent(jokeEl.textContent);
+    const text = encodeURIComponent(`${quoteEl.textContent} ${authorEl.textContent}`);
     const url = `https://twitter.com/intent/tweet?text=${text}`;
-    window.open(url, '_blank');
+    window.open(url,'_blank');
   }
 
-  btn.addEventListener('click', getJoke);
+  // Favorites
+  function getFavs(){ try{return JSON.parse(localStorage.getItem('rq_favs')||'[]')}catch(e){return []} }
+  function setFavs(arr){ localStorage.setItem('rq_favs', JSON.stringify(arr)); }
+  function currentQuoteObj(){
+    return {content:quoteEl.textContent.replace(/^“|”$/g,''), author:authorEl.textContent.replace(/^—\s*/,''), tags: (tagsEl.textContent.replace(/^Tags:\s*/,'')) .split(',').map(s=>s.trim()).filter(Boolean)}
+  }
+  function renderFavs(){
+    const favs = getFavs();
+    favList.innerHTML='';
+    if(!favs.length){ favList.innerHTML = '<div class="muted">No favorites yet.</div>'; return; }
+    favs.forEach((q, i)=>{
+      const div = document.createElement('div'); div.className='fav';
+      const left = document.createElement('div');
+      left.innerHTML = `<div>“${q.content}”</div><small>— ${q.author||'Unknown'}</small>`;
+      const remove = document.createElement('button'); remove.className='ghost'; remove.textContent='✖';
+      remove.onclick = ()=>{ const a=getFavs(); a.splice(i,1); setFavs(a); renderFavs(); };
+      div.appendChild(left); div.appendChild(remove);
+      favList.appendChild(div);
+    });
+  }
+  function saveFav(){
+    const favs = getFavs();
+    const q = currentQuoteObj();
+    if(favs.some(f=>f.content===q.content && f.author===q.author)){
+      saveBtn.textContent='✅ Saved'; return;
+    }
+    favs.unshift(q); setFavs(favs); renderFavs(); saveBtn.textContent='✅ Saved';
+  }
+
+  // Canvas image export
+  function drawToCanvas(){
+    const w = 1080, h = 1080; canvas.width=w; canvas.height=h; const ctx = canvas.getContext('2d');
+    // background
+    const grad = ctx.createLinearGradient(0,0,w,h); grad.addColorStop(0,'#0b1021'); grad.addColorStop(1,'#091427'); ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(255,255,255,.1)';
+    for(let i=0;i<6;i++){ ctx.beginPath(); ctx.arc(Math.random()*w, Math.random()*h, 120+Math.random()*120, 0, Math.PI*2); ctx.fill(); }
+    // text
+    const quote = quoteEl.textContent.replace(/^“|”$/g,'');
+    const author = authorEl.textContent.replace(/^—\s*/, '');
+    ctx.fillStyle = '#e5e7eb';
+    ctx.font = 'bold 56px Inter, Arial';
+    const lines = wrapText(ctx, '“'+quote+'”', w-200, 80);
+    let y = 240; lines.forEach(l=>{ ctx.fillText(l, 100, y); y+=72; });
+    ctx.font = '28px Inter, Arial'; ctx.fillStyle = '#94a3b8';
+    ctx.fillText('— '+author, 100, y+24);
+  }
+  function wrapText(ctx, text, maxWidth, maxLines){
+    const words = text.split(' '); const lines=[]; let line='';
+    for(const word of words){
+      const test = line? line+' '+word : word;
+      if(ctx.measureText(test).width <= maxWidth){ line = test; }
+      else{ lines.push(line); line = word; if(lines.length>=maxLines-1) break; }
+    }
+    if(line) lines.push(line);
+    return lines;
+  }
+  async function copyAsImage(){ drawToCanvas(); try{ await navigator.clipboard.write([await canvasToClipboardItem(canvas)]); copyAsImgBtn.textContent='✅ Copied'; setTimeout(()=>copyAsImgBtn.textContent='🖼️ Copy as image',1200);}catch(e){ alert('Copy as image failed. Try Download.'); } }
+  function downloadPng(){ drawToCanvas(); const url = canvas.toDataURL('image/png'); const a=document.createElement('a'); a.href=url; a.download='quote.png'; a.click(); }
+  async function canvasToClipboardItem(cv){ const blob = await new Promise(res=>cv.toBlob(res)); return new ClipboardItem({[blob.type]: blob}); }
+
+  // events
+  newBtn.addEventListener('click', getQuote);
   ttsBtn.addEventListener('click', speak);
   copyBtn.addEventListener('click', copy);
   tweetBtn.addEventListener('click', tweet);
+  saveBtn.addEventListener('click', saveFav);
+  clearFav.addEventListener('click', ()=>{ localStorage.removeItem('rq_favs'); renderFavs(); });
+  copyAsImgBtn.addEventListener('click', copyAsImage);
+  downloadPngBtn.addEventListener('click', downloadPng);
 
-  // Load a joke immediately
-  getJoke();
+  // init
+  renderFavs();
+  getQuote();
 })();
 </script>
 </body>
